@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # COMP90042 Project Codes - Instructions
 
 ## Data Processing
@@ -19,3 +20,6 @@ The codes in “task2_method1.ipynb” and “task2_method2.ipynb” will predic
 The file “task2_method1.ipynb” introduces the claim-only text classification method for fact checking, using BERT plus a classifier.
 
 The file “task2_method2.ipynb” introduces the claim+evidence text classification method for fact checking, using BERT plus a classifier.
+=======
+# Unimelb COMP90042 Automated Fact Checking For Climate Science Claims
+>>>>>>> 80dd66aa1351e8eba1f182981e1e0e673a2c31a5
