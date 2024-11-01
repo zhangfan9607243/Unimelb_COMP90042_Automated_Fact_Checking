@@ -35,9 +35,13 @@ llama_token = AutoTokenizer.from_pretrained(model_id)
 def llama_ask_question(text, max_new_tokens=16):
 
     question = f"""
-    You are an expert in climate change. 
-    Please determine if the following text constitutes a statement related to climatology, meteorology, geology, or broadly within the fields of physics, chemistry, biology, or engineering. 
+    You are an expert in climate change. Please assess whether the following text meets all of the criteria below:
+    1. The statement is complete and meaningful.
+    2. The statement includes clear and specific references.
+    3. The statement is related to climatology, meteorology, geology, or broadly within the fields of physics, chemistry, biology, or engineering.
+    
     Text: '{text}'
+
     Respond with only one word: Yes or No. Please do not respond with anything else.
     """
 

@@ -13,7 +13,11 @@ The goal of this project is to create an automated fact-checking system that can
    - `NOT_ENOUGH_INFO`: Evidence is insufficient to determine the truthfulness.
    - `DISPUTED`: Evidence is inconclusive or contradictory.
 
+In this project, we will adopt an approach that combines an encoder-based LLM (RoBERTa) with a decoder-based LLM (LLaMA).
+
 The final system's performance is evaluated using **Codalab**, where both evidence retrieval and claim classification are measured.
+
+## Files Introduction
 
 Please ensure you set up the following directory structure before running the project:
 
@@ -53,9 +57,9 @@ The following is detailed explanation of folders and files:
     * `data_vald_t2.json`: The validation dataset that is ready for task 2, after running `/data_process/Data Process c - Task 2.ipynb`.
     * `data_test_t2.json`: The testing dataset that is ready for task 2, after running `/task1/t1_model_testing.py` and then `/data_process/Data Process c - Task 2.ipynb`.
   * `data3/`: The folder for final output, which is expected to contain labelled test data for final evaluation, which is going to contain:
-    * t1_result.json: The prediction of task 1 on testing dataset, after running `/task1/t1_model_testing.py`.
-    * t2_result.json: The prediction of task 2 on testing dataset, after running `/task2/t2_model_testing.py`.
-    * test-claims-predictions.json: The final prediction result on testing dataset, after running `/task1/t1_model_testing.py` and then `/task2/t2_model_testing.py` and then `/data_process/Data Process d - Prediction.ipynb`.
+    * `t1_result.json`: The prediction of task 1 on testing dataset, after running `/task1/t1_model_testing.py`.
+    * `t2_result.json`: The prediction of task 2 on testing dataset, after running `/task2/t2_model_testing.py`.
+    * `test-claims-predictions.json`: The final prediction result on testing dataset, after running `/task1/t1_model_testing.py` and then `/task2/t2_model_testing.py` and then `/data_process/Data Process d - Prediction.ipynb`.
 * `model/`: The saved language models.
 
   * `model_task1/model_task1.pth`: The Distilled RoBERTa Model for the first task, after running `/task1/t1_model_training.py`.
@@ -82,24 +86,80 @@ The following is detailed explanation of folders and files:
 
 ## Data Processing
 
-The original 5 json data file is expected to be included in a path called "data_raw/". Then we can run all the codes in "data_processor.ipynb". This will produce processed data as csv files in a path called “data_processed/”.
+We did virtually no preprocessing, in `/data_process/Data Process a - Preprocessing.ipynb`, because the LLMs we used, whether encoder-based or decoder-based, can handle complex textual contexts. Therefore, we did not perform cleaning, did not remove stopwords, and did not apply stemming or lemmatization.
 
-## Task 0
+We processed the data structure so that it could be directly applied to task 1 and task 2. For task 1, in `/data_process/Data Process b - Task 1.ipynb`, we matched each claim-evidence pair into a row with label 1, and performed negative sampling to match non-corresponding claim-evidence pairs into a row with label 0. For task 2, in `/data_process/Data Process c - Task 2.ipynb`, we concatenated all relevant evidence into a single text passage.
 
-## Task 1
+Finally, in `/data_process/Data Process d - Prediction.ipynb`, we processed the final prediction result in the format that **Codalab** competition requires.
 
-The codes in “task1_method1.ipynb” and “task1_method2.ipynb” will produce the predicted  evidence for claims in the development dataset and the testing set, as csv files in a path called “evdn_pred/”.
+## Task 0: Filter Evidences
 
-The file “task1_method1.ipynb” introduces the method of using sentence matching by TF-IDF vectorization to compare similarities between claims and evidence sentences to find the most relevant evidence for a certain claim.
+The original evidence file contains 1.27 million evidences, but not all of them are useful for our tasks.
 
-The file “task1_method2.ipynb” introduces the method of using sentence matching by doc2vec embedding to compare similarities between one claim and another claim. We want to find the most similar labelled claim to a certain test claim, and use the evidence of the most similar labelled claim directly.
+Firstly, some statements are ambiguous in their references, for example:
 
-## Task 2
+```
+evidence-204475: He is seeking re-election as the Member of Parliament (MP) for Moray.
+evidence-61016: She competed for Brazil at the 2000 Summer Olympics in Sydney, Australia.
+```
 
-The codes in “task2_method1.ipynb” and “task2_method2.ipynb” will predict the label of claims in the development dataset and the testing dataset. We should clarify which evidence prediction in the “evdn_pred/” path is used as evidence prediction for the development dataset and the testing dataset. The codes will directly generate the output json file for the development dataset for evaluation, and for the testing dataset that can be submitted to Codalab. The output files are generated in root path.
+Secondly, some statemens are not related to climate, or more broadly, science or engineering, for example:
 
-The file “task2_method1.ipynb” introduces the claim-only text classification method for fact checking, using BERT plus a classifier.
+```
+evidence-168510: Weird Love -- A man discovers that his girlfriend is a were -- caterpillar.
+evidence-472063: Lichtenberger has made five World Series of Poker final tables and has won a WSOP bracelet in 2016.
+```
 
-The file “task2_method2.ipynb” introduces the claim+evidence text classification method for fact checking, using BERT plus a classifier.
+Thirdly, some statements are incomplete or meaningless, for example:
+
+```
+evidence-904713: | style = ``text-align : center ;'' | MSK (3 hrs) | | Ivanovo, Russia : GB-1
+evidence-85800: Jorge Tavares may refer to:
+```
+
+Therefore, we retain evidence statements that are only related to our tasks, in `task0/t0_filter_evidences.py`.
+
+In this case, we use a pretrained LLaMA 3.1 8G model without fine-tuning, to help us filter the relevant statements, using the following prompt:
+
+```
+You are an expert in climate change. Please assess whether the following text meets all of the criteria below:
+1. The statement is complete and meaningful.
+2. The statement includes clear and specific references.
+3. The statement is related to climatology, meteorology, geology, or broadly within the fields of physics, chemistry, biology, or engineering.
+  
+Text: '{evidence}'
+
+Respond with only one word: Yes or No. Please do not respond with anything else.
+```
+
+Note: Please ensure that you have permission to use the LLaMA model.
+
+## Task 1: Evidence Retrieval
+
+In this task, we train a distilled RoBERTa model, to learn the relationship between claim and its related evidences, in order to identify whether a evidence is the relevant to a given claim.
+
+* In `t1_dataset_datalod.py`, we define the datasets and data loaders of training and testing data for the model.
+* In `t1_model_structure.py`, we define the model structure, which is a distilled RoBERTa model plus a classifier on 2 classes.
+* In `t1_model_training.py`, we train the model on training dataset and evaluate the model on validation dataset, with an early stopping mechanism.
+* In `t1_model_testing.py`, we use the model to predict on testing dataset, comparing each claim with every filtered evidence.
+
+The predicte result is going to be stored as `/data3/t1_result.json`.
+
+## Task 2: Claim Classification
+
+In this task, we also train a distilled RoBERTa model, to identify the label of a claim, using the combined text of claim and its relevant evidences.
+
+* In `t2_dataset_datalod.py`, we define the datasets and data loaders of training and testing data for the model.
+* In `t2_model_structure.py`, we define the model structure, which is a distilled RoBERTa model plus a classifier on 4 classes.
+* In `t2_model_training.py`, we train the model on training dataset and evaluate the model on validation dataset, with an early stopping mechanism.
+* In `t2_model_testing.py`, we use the model to predict on testing dataset, classifying each claim into one of the four categories.
+
+The predicte result is going to be stored as `/data3/t2_result.json`.
 
 ## Final Result
+
+The F1-Score for task 1 (evidence retrieval) and Accuracy score for task 2, as well as the harmonic mean of these two metricses are:
+
+* Task 1: F1-Score (F): 0.3565
+* Task 2: Accuracy (A): 0.6837
+* Overall: Harmonic Mean of F and A: 0.4686
