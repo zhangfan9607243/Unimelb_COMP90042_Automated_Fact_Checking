@@ -30,7 +30,6 @@ Please ensure you set up the following directory structure before running the pr
 |---model/
     |---model_task1/
     |---model_task2/
-
 ```
 
 The following is detailed explanation of folders and files:
