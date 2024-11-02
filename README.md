@@ -19,7 +19,7 @@ The final system's performance is evaluated using **Codalab**, where both eviden
 
 ## Files Introduction
 
-Please ensure you set up the following directory structure before running the project:
+Please ensure you set up the following additional directory structure before running the project:
 
 ```
 /
@@ -33,7 +33,6 @@ Please ensure you set up the following directory structure before running the pr
 ```
 
 The following is detailed explanation of folders and files:
-
 * `data/`: The folder for original data, processed data, and the output data
   * `data1/`: The folder for original data, which contains:
     * `train-claims.json`: The training dataset containing the claims, related evidence, and the label.
