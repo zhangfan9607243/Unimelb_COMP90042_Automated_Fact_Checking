@@ -36,7 +36,6 @@ Please ensure you set up the following directory structure before running the pr
 The following is detailed explanation of folders and files:
 
 * `data/`: The folder for original data, processed data, and the output data
-
   * `data1/`: The folder for original data, which contains:
     * `train-claims.json`: The training dataset containing the claims, related evidence, and the label.
     * `dev-claims.json`: The validation dataset containing the claims, related evidence, and the label.
@@ -61,24 +60,20 @@ The following is detailed explanation of folders and files:
     * `t2_result.json`: The prediction of task 2 on testing dataset, after running `/task2/t2_model_testing.py`.
     * `test-claims-predictions.json`: The final prediction result on testing dataset, after running `/task1/t1_model_testing.py` and then `/task2/t2_model_testing.py` and then `/data_process/Data Process d - Prediction.ipynb`.
 * `model/`: The saved language models.
-
   * `model_task1/model_task1.pth`: The Distilled RoBERTa Model for the first task, after running `/task1/t1_model_training.py`.
   * `model_task2/model_task2.pth`: The Distilled RoBERTa Model for the second task, after running `/task2/t2_model_training.py`.
 * `data_process/`: The notebooks for data processing.
-
   * `Data Process a - Preprocess.ipynb`: Simple data preprocessing on training, validation, testing, and evidence data.
   * `Data Process b - Task 1.ipynb`: Process training, validation, and testing data for task 1, including negative sampling of evidences for training and validation data.
   * `Data Process c - Task 2.ipynb`: Process training, validation, and testing data for task 2.
   * `Data Process d - Prediction.ipynb`: Generate the final prediction result on testing data for project evaluation.
 * `task0/t0_filter_evidences.py`: Use pretrained LLaMA 3.1 8G model without fine-tunning to help filter evidences that is only related to the climate topic.
 * `task1/`: The codes of task 1.
-
   * `t1_dataset_datalod.py`: Define dataset and data loader for task 1.
   * `t1_model_structure.py`: Define model for task 1, which is a distilled RoBERTa model plus a classifier.
   * `t1_model_training.py`: Train and save the model for task 1.
   * `t1_model_testing.py`: Use model to predict on testing data for task 1.
 * `task2/`: The codes of task 2.
-
   * `t1_dataset_datalod.py`: Define dataset and data loader for task 1.
   * `t1_model_structure.py`: Define model for task 1, which is a distilled RoBERTa model plus a classifier.
   * `t1_model_training.py`: Train and save the model for task 1.
