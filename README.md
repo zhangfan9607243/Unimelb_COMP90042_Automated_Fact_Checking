@@ -1,5 +1,8 @@
 # Unimelb COMP90042 Automatic Fact Checking - Climate Change Claims
 
+## Acknowledgement
+I would like to extend my sincere gratitude to the Unimelb COMP90042 2023S1 teaching team for providing me with the opportunity to work on this project, as well as for their guidance and feedback on my work.
+
 ## Project Introduction
 
 This project focuses on building a automatic fact-checking system for climate science claims.
