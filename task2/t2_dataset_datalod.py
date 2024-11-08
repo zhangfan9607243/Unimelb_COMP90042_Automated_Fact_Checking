@@ -65,7 +65,7 @@ class ModelDataset(Dataset):
 data_tran_t2 = pd.read_json('/root/COMP90042/data/data2/data_tran_t2.json', orient='records', lines=True)
 data_vald_t2 = pd.read_json('/root/COMP90042/data/data2/data_vald_t2.json', orient='records', lines=True)
 data_test_t2 = pd.read_json('/root/COMP90042/data/data2/data_test_t2.json', orient='records', lines=True)
-data_evdn    = pd.read_json('/root/COMP90042/data/data2/data_evdn_filtered.json', orient='records', lines=True)
+data_evdn    = pd.read_json('/root/COMP90042/data/data2/data_evdn.json', orient='records', lines=True)
 
 dataset_tran = ModelDataset(data_tran_t2, distilroberta_token, is_tran=True)
 dataset_vald = ModelDataset(data_vald_t2, distilroberta_token, is_tran=True)
