@@ -16,8 +16,6 @@ The goal of this project is to create an automated fact-checking system that can
    - `NOT_ENOUGH_INFO`: Evidence is insufficient to determine the truthfulness.
    - `DISPUTED`: Evidence is inconclusive or contradictory.
 
-In this project, we will adopt an approach that combines an encoder-based LLM (RoBERTa) with a decoder-based LLM (LLaMA).
-
 The final system's performance is evaluated using **Codalab**, where both evidence retrieval and claim classification are measured.
 
 ## Files Introduction
@@ -46,7 +44,6 @@ The following is detailed explanation of folders and files:
     * `eval.py`: The function for evaluation.
   * `data2/`: The folder for processed data, which is expected to contain processed training, validation, testing, and evidence data, which is ready for the following tasks. This folder is going to contain:
     * `data_evdn.json`: The simply preprocessed evidences, after running `/data_process/Data Process a - Preprocess.ipynb`.
-    * `data_evdn_filtered.json`: The filtered evidences by the help of decoder-based model LLaMA 3.1, after running `/task0/to_filter_evidences.py`.
     * `data_tran.json`: The simply preprocessed training dataset, after running `/data_process/Data Process a - Preprocess.ipynb`.
     * `data_vald.json`: The simply preprocessed validation dataset, after running `/data_process/Data Process a - Preprocess.ipynb`.
     * `data_test.json`: The simply preprocessed testing dataset, after running `Data /data_process/Data Process a - Preprocess.ipynb`.
@@ -87,48 +84,6 @@ We did virtually no preprocessing, in `/data_process/Data Process a - Preprocess
 We processed the data structure so that it could be directly applied to task 1 and task 2. For task 1, in `/data_process/Data Process b - Task 1.ipynb`, we matched each claim-evidence pair into a row with label 1, and performed negative sampling to match non-corresponding claim-evidence pairs into a row with label 0. For task 2, in `/data_process/Data Process c - Task 2.ipynb`, we concatenated all relevant evidence into a single text passage.
 
 Finally, in `/data_process/Data Process d - Prediction.ipynb`, we processed the final prediction result in the format that **Codalab** competition requires.
-
-## Task 0: Filter Evidences
-
-The original evidence file contains 1.27 million evidences, but not all of them are useful for our tasks.
-
-Firstly, some statements are ambiguous in their references, for example:
-
-```
-evidence-204475: He is seeking re-election as the Member of Parliament (MP) for Moray.
-evidence-61016: She competed for Brazil at the 2000 Summer Olympics in Sydney, Australia.
-```
-
-Secondly, some statemens are not related to climate, or more broadly, science or engineering, for example:
-
-```
-evidence-168510: Weird Love -- A man discovers that his girlfriend is a were -- caterpillar.
-evidence-472063: Lichtenberger has made five World Series of Poker final tables and has won a WSOP bracelet in 2016.
-```
-
-Thirdly, some statements are incomplete or meaningless, for example:
-
-```
-evidence-904713: | style = ``text-align : center ;'' | MSK (3 hrs) | | Ivanovo, Russia : GB-1
-evidence-85800: Jorge Tavares may refer to:
-```
-
-Therefore, we retain evidence statements that are only related to our tasks, in `task0/t0_filter_evidences.py`.
-
-In this case, we use a pretrained LLaMA 3.1 8G model without fine-tuning, to help us filter the relevant statements, using the following prompt:
-
-```
-You are an expert in climate change. Please assess whether the following text meets all of the criteria below:
-1. The statement is complete and meaningful.
-2. The statement includes clear and specific references.
-3. The statement is related to climatology, meteorology, geology, or broadly within the fields of physics, chemistry, biology, or engineering.
-  
-Text: '{evidence}'
-
-Respond with only one word: Yes or No. Please do not respond with anything else.
-```
-
-Note: Please ensure that you have permission to use the LLaMA model.
 
 ## Task 1: Evidence Retrieval
 
