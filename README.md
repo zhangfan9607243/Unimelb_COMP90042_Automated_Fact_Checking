@@ -23,14 +23,18 @@ The final system's performance is evaluated using **Codalab**, where both eviden
 Please ensure you set up the following additional directory structure before running the project:
 
 ```
-/
-|---data/
-    |---data1/
-    |---data2/
-    |---data3/
-|---model/
-    |---model_task1/
-    |---model_task2/
+automatic_fact_checking/
+|-- data/
+|   |
+|   |-- data_original/
+|   |-- data_task0/
+|   |-- data_task1/
+|   |-- data_task2/
+|   |-- data_output/
+|
+|-- task0/
+|   |
+|   |-- task0.ipynb
 ```
 
 The following is detailed explanation of folders and files:
