@@ -38,7 +38,7 @@ automatic_fact_checking/
 └── task2/
 ```
 
-The following is detailed explanation of folders and files:
+The following is detailed explanation of folders:
 
 - `data/`: The folder for original data, processed data, and the output data
 
