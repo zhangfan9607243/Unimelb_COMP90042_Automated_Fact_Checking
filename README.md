@@ -24,97 +24,83 @@ Please ensure you set up the following additional directory structure before run
 
 ```
 automatic_fact_checking/
-|-- data/
-|   |
-|   |-- data_original/
-|   |-- data_task0/
-|   |-- data_task1/
-|   |-- data_task2/
-|   |-- data_output/
-|
-|-- task0/
-|   |
-|   |-- task0.ipynb
+│ 
+├── data/
+│   ├── data_original/
+│   ├── data_task0/
+│   ├── data_task1/
+│   └── data_task2/
+│
+├── task0/
+│
+├── task1/
+│
+└── task2/
 ```
 
 The following is detailed explanation of folders and files:
-* `data/`: The folder for original data, processed data, and the output data
-  * `data1/`: The folder for original data, which contains:
-    * `train-claims.json`: The training dataset containing the claims, related evidence, and the label.
-    * `dev-claims.json`: The validation dataset containing the claims, related evidence, and the label.
-    * `dev-claims-baseline.json`: The same validation dataset with predicted label for demostration of evaluation.
-    * `test-claims-unlabelled.json`: The testing dataset with claim only.
-    * `evidence.json`: The list of evidences.
-    * `eval.py`: The function for evaluation.
-  * `data2/`: The folder for processed data, which is expected to contain processed training, validation, testing, and evidence data, which is ready for the following tasks. This folder is going to contain:
-    * `data_evdn.json`: The simply preprocessed evidences, after running `/data_process/Data Process a - Preprocess.ipynb`.
-    * `data_tran.json`: The simply preprocessed training dataset, after running `/data_process/Data Process a - Preprocess.ipynb`.
-    * `data_vald.json`: The simply preprocessed validation dataset, after running `/data_process/Data Process a - Preprocess.ipynb`.
-    * `data_test.json`: The simply preprocessed testing dataset, after running `Data /data_process/Data Process a - Preprocess.ipynb`.
-    * `data_tran_t1.json`: The training dataset that is ready for task 1, after running `/data_process/Data Process b - Task 1.ipynb`.
-    * `data_vald_t1.json`: The validation dataset that is ready for task 1, after running `/data_process/Data Process b - Task 1.ipynb`.
-    * `data_test_t1.json`: The testing dataset that is ready for task 1, after running `/data_process/Data Process b - Task 1.ipynb`.
-    * `data_tran_t2.json`: The training dataset that is ready for task 2, after running `/data_process/Data Process c - Task 2.ipynb`.
-    * `data_vald_t2.json`: The validation dataset that is ready for task 2, after running `/data_process/Data Process c - Task 2.ipynb`.
-    * `data_test_t2.json`: The testing dataset that is ready for task 2, after running `/task1/t1_model_testing.py` and then `/data_process/Data Process c - Task 2.ipynb`.
-  * `data3/`: The folder for final output, which is expected to contain labelled test data for final evaluation, which is going to contain:
-    * `t1_result.json`: The prediction of task 1 on testing dataset, after running `/task1/t1_model_testing.py`.
-    * `t2_result.json`: The prediction of task 2 on testing dataset, after running `/task2/t2_model_testing.py`.
-    * `test-claims-predictions.json`: The final prediction result on testing dataset, after running `/task1/t1_model_testing.py` and then `/task2/t2_model_testing.py` and then `/data_process/Data Process d - Prediction.ipynb`.
-* `model/`: The saved language models.
-  * `model_task1/model_task1.pth`: The Distilled RoBERTa Model for the first task, after running `/task1/t1_model_training.py`.
-  * `model_task2/model_task2.pth`: The Distilled RoBERTa Model for the second task, after running `/task2/t2_model_training.py`.
-* `data_process/`: The notebooks for data processing.
-  * `Data Process a - Preprocess.ipynb`: Simple data preprocessing on training, validation, testing, and evidence data.
-  * `Data Process b - Task 1.ipynb`: Process training, validation, and testing data for task 1, including negative sampling of evidences for training and validation data.
-  * `Data Process c - Task 2.ipynb`: Process training, validation, and testing data for task 2.
-  * `Data Process d - Prediction.ipynb`: Generate the final prediction result on testing data for project evaluation.
-* `task0/t0_filter_evidences.py`: Use pretrained LLaMA 3.1 8G model without fine-tunning to help filter evidences that is only related to the climate topic.
-* `task1/`: The codes of task 1.
-  * `t1_dataset_datalod.py`: Define dataset and data loader for task 1.
-  * `t1_model_structure.py`: Define model for task 1, which is a distilled RoBERTa model plus a classifier.
-  * `t1_model_training.py`: Train and save the model for task 1.
-  * `t1_model_testing.py`: Use model to predict on testing data for task 1.
-* `task2/`: The codes of task 2.
-  * `t1_dataset_datalod.py`: Define dataset and data loader for task 1.
-  * `t1_model_structure.py`: Define model for task 1, which is a distilled RoBERTa model plus a classifier.
-  * `t1_model_training.py`: Train and save the model for task 1.
-  * `t1_model_testing.py`: Use model to predict on testing data for task 1.
 
-## Data Processing
+- `data/`: The folder for original data, processed data, and the output data
 
-We did virtually no preprocessing, in `/data_process/Data Process a - Preprocessing.ipynb`, because the LLMs we used, whether encoder-based or decoder-based, can handle complex textual contexts. Therefore, we did not perform cleaning, did not remove stopwords, and did not apply stemming or lemmatization.
+  - `data_original/`: The folder for original data, which contains the training, validation, and testing datasets. The data can be downloaded from the [link](https://pan.baidu.com/s/1w0JkQVTIPZHkocowz8r2EA?pwd=xvjb). Please unzip the downloaded file and put all the contents into this folder.
+  - `data_task0/`: The folder for data processed for task 0, which is the data filtering step. It contains the filtered evidence for each claim. The data will be generated after running `task0/task0.ipynb`.
+  - `data_task1/`: The folder for output of task 1, which is the evidence retrieval step. The data will be generated after running `task1/task1.ipynb`.
+  - `data_task2/`: The folder for output of task 2, which is the claim classification step. The data will be generated after running `task2/task2.ipynb`.
 
-We processed the data structure so that it could be directly applied to task 1 and task 2. For task 1, in `/data_process/Data Process b - Task 1.ipynb`, we matched each claim-evidence pair into a row with label 1, and performed negative sampling to match non-corresponding claim-evidence pairs into a row with label 0. For task 2, in `/data_process/Data Process c - Task 2.ipynb`, we concatenated all relevant evidence into a single text passage.
+- `task0/`: The folder for code of task 0, which is the data filtering step.
 
-Finally, in `/data_process/Data Process d - Prediction.ipynb`, we processed the final prediction result in the format that **Codalab** competition requires.
+- `task1/`: The folder for code of task 1, which is the evidence retrieval step.
+
+- `task2/`: The folder for code of task 2, which is the claim classification step.
+
+## Task 0: Data Filtering
+
+Before implementing the evidence retrieval and claim classification models, we first need to filter the evidences for each claim, in order to reduce the number of evidences that need to be compared with each claim, which can significantly improve the efficiency of the following two tasks.
+
+The logic of this task is simple: if an evidence is related to a claim, then they should have at least one common unigram none or proper noun. Therefore, we can filter the evidences for each claim by checking whether they have at least one common unigram none or proper noun.
+
+In prctice, we set the threshold of the number of common unigram none or proper nouns to 2, which means that if an evidence has at least 2 common unigram none or proper nouns with a claim, then we consider this evidence as a relevant evidence for this claim. This can not only help us retain relevant evidences for each claim, but also keep the number of evidences for each claim at a reasonable level.
 
 ## Task 1: Evidence Retrieval
 
-In this task, we train a distilled RoBERTa model, to learn the relationship between claim and its related evidences, in order to identify whether a evidence is the relevant to a given claim.
+After filtering the evidences for each claim, we train a distilled RoBERTa model to retrieve the relevant evidences for each claim from the filtered evidences.
 
-* In `t1_dataset_datalod.py`, we define the datasets and data loaders of training and testing data for the model.
-* In `t1_model_structure.py`, we define the model structure, which is a distilled RoBERTa model plus a classifier on 2 classes.
-* In `t1_model_training.py`, we train the model on training dataset and evaluate the model on validation dataset, with an early stopping mechanism.
-* In `t1_model_testing.py`, we use the model to predict on testing dataset, comparing each claim with every filtered evidence.
+The negative samples are generated by randomly selecting evidences that are not relevant to the claim from the filtered evidences, while the positive samples are the relevant evidences identified in the original data.
 
-The predicte result is going to be stored as `/data3/t1_result.json`.
+After training the model, we use it to predict the relevance score of each evidence for each claim, and select the top 6 evidences with the highest relevance scores as the retrieved evidences for each claim. The predicted result is going to be stored as `/data/data_task1/data_task1.json`.
 
 ## Task 2: Claim Classification
 
-In this task, we also train a distilled RoBERTa model, to identify the label of a claim, using the combined text of claim and its relevant evidences.
+In this task, we also train a distilled RoBERTa model, to identify the label of a claim, using the combined text of claim and its relevant evidences. 
 
-* In `t2_dataset_datalod.py`, we define the datasets and data loaders of training and testing data for the model.
-* In `t2_model_structure.py`, we define the model structure, which is a distilled RoBERTa model plus a classifier on 4 classes.
-* In `t2_model_training.py`, we train the model on training dataset and evaluate the model on validation dataset, with an early stopping mechanism.
-* In `t2_model_testing.py`, we use the model to predict on testing dataset, classifying each claim into one of the four categories.
+We transform the label of each claim into a 2-dimensional vector, like `[-1, 1]`. The first element means the support score, ranging from -1 to 1, while the second element means the relevant score, ranging from 0 to 1. 
 
-The predicte result is going to be stored as `/data3/t2_result.json`.
+- If the original label is `NOT_ENOUGH_INFO`, then the transformed label is `[0, 0]`. The second element being 0 means that the claim is not relevant to any evidence, while the first element being 0 means nothing in this case, since the claim is not relevant to any evidence.
+- If the original label is `SUPPORTS`, then the transformed label is `[1, 1]`. The second element being 1 means that the claim is relevant to at least one evidence, while the first element being 1 means that the claim is supported by at least one evidence. 
+- If the original label is `REFUTES`, then the transformed label is `[-1, 1]`. The second element being 1 means that the claim is relevant to at least one evidence, while the first element being -1 means that the claim is refuted by at least one evidence.
+- If the original label is `DISPUTED`, then the transformed label is `[0, 1]`. The second element being 1 means that the claim is relevant to at least one evidence, while the first element being 0 means that the claim is neither supported nor refuted by any evidence.
+
+This logic is also applied to the predicted label of each claim:
+
+- First we assess the second element of the predicted label: 
+
+  - If the second element is less than 0.5, then we consider this claim as `NOT_ENOUGH_INFO`
+  - If the second element is greater than or equal to 0.5, then we further assess the first element of the predicted label
+
+- When assessing the first element of the predicted label, we have three cases:
+
+  - If the first element is greater than 0.5, then we consider this claim as `SUPPORTS`
+  - If the first element is less than -0.5, then we consider this claim as `REFUTES`
+  - Otherwise, we consider this claim as `DISPUTED`
+
+The predicted result is going to be stored as `/data/data_task2/data_task2.json`.
 
 ## Final Result
 
-The F1-Score for task 1 (evidence retrieval) and Accuracy score for task 2, as well as the harmonic mean of these two metricses are:
+The results of task 1 and task 2 are as follows:
 
-* Task 1: F1-Score (F): 0.3565
-* Task 2: Accuracy (A): 0.6837
-* Overall: Harmonic Mean of F and A: 0.4686
+|                | Task 1: Accuracy | Task 2: Accuracy | Overall: Mean of Accuracy |
+|--------------- | ---------------- | ---------------- | --------------------------|
+| Training Set   | 0.9933 | 0.9741 | 0.9837 |
+| Validation Set | 0.9126 | 0.7468 | 0.8297 |
+| Testing Set    | 0.8027 | 0.6837 | 0.7432 |
